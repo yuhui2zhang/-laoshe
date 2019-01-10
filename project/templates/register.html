@@ -16,17 +16,43 @@
 <!-- /css files -->
 </head>
 <body>
+<script src="{% static 'js/jquery-1.8.2.min.js' %}"></script>
+<script>
+    function check_register_form(_this) {
+        var username = $(_this).siblings().eq(1).val();
+        var phone = $(_this).siblings().eq(2).val();
+        console.log(username);
+        console.log(phone);
+        var password = $(_this).siblings().eq(4).val();
+        if (username=='NAME AND SURNAME' || phone=='PHONE' || password=='PASSWORD'){
+            alert('请先完善好信息');
+            return false;
+        } else if (!/^[a-zA-Z0-9_-]{6,16}$/.test(username)){
+            alert('用户名长度：6-16');
+            return false;
+        }else if (!/^1[34578]\d{9}$/.test(phone)){
+            alert("手机号码有误，请重填");
+        }else if(password.length<6 || password.length>16){
+            alert('密码长度：6-16');
+            return false;
+        }
+        $(_this).parent().submit();
+    }
+</script>
 <h1>Register</h1>
 <div class="log">
 	<div class="content2">
 		<h2>Register</h2>
+        {% if status %}
+            <h3>{{ status }}</h3>
+        {% endif %}
 		<form method="post" action="{% url 'user:register' %}">
 			{% csrf_token %}
 			<input type="text" name="userid" value="USERNAME" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'NAME AND SURNAME';}">
 			<input type="tel" name="usrtel" value="PHONE" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'PHONE';}">
 			<input type="email" name="email" value="EMAIL ADDRESS" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'EMAIL ADDRESS';}">
 			<input type="password" name="psw" value="PASSWORD" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'PASSWORD';}">
-			<input type="submit" class="register" value="Register">
+			<input type="button" class="register" value="Register" onclick="check_register_form(this);">
 		</form>
 	</div>
 	<div class="clear"></div>

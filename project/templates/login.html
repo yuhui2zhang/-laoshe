@@ -208,7 +208,9 @@
         <!-- 学生登录开始 -->
         <div>
             <div class="stu_error_box"></div>
-            <form action="" method="post" class="stu_login_error">
+{#            <form action="{% url 'user:login' %}" method="post" class="stu_login_error">#}
+            <form action="{% url 'user:login' %}" method="post">
+                {% csrf_token %}
                 <div id="username">
                     <label>账&nbsp;&nbsp;&nbsp;号：</label>
                     <input type="text" id="stu_username_hide" name="username" value="输入账号" nullmsg="账号不能为空！"
@@ -224,7 +226,7 @@
                     <label>验证码：</label>
                     <input type="text" id="stu_code_hide" name="code" value="输入验证码" nullmsg="验证码不能为空！" datatype="*4-4"
                            errormsg="验证码有4位数！" sucmsg="验证码验证通过！"/>
-                    <img src="{% static 'images/captcha.jpg' %}" title="点击更换" alt="验证码占位图"/></div>
+                    <a href="javascript:void(0);" onclick="document.getElementById('imgVcode').src = '{% url 'user:get_captcha' %}?'+(new Date()).getTime()"><img id="imgVcode" src="{% url 'user:get_captcha' %}" title="点击更换" alt="验证码占位图"/></a> </div>
                 <div id="remember">
                 </div>
                 <div id="login">
