@@ -1,12 +1,12 @@
 import os
 
 from django.contrib.auth.hashers import make_password, check_password
+from django.core.paginator import Page, Paginator
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 # Create your views here.
-from user_app.models import User
-
+from user_app.models import User, TSj
 
 def to_register(request):
     """
@@ -64,7 +64,7 @@ def login(request):
             # return redirect('user:main')
         raise ValueError
     except:
-        return redirect('user:to_login')
+        return redirect('user:to_main')
 
 
 def get_captcha(request):
@@ -84,3 +84,26 @@ def get_captcha(request):
     # request.META.update({'captcha':code})
     # print(request.META['captcha'])
     return HttpResponse(data, "image/png")
+
+def to_menu(request):
+    """
+    进入menu页面
+    :param request:
+    :return:
+    """
+    search = request.GET.get('search', 'search')
+    city = request.GET.get('city', '')
+    job = request.GET.get('job', '')
+    page_index = request.GET.get('page_index', 1)
+    li = TSj.objects.filter(city__contains=city, position__contains=job)
+    page = Paginator(li, 10).page(page_index)
+    return render(request, 'menu.html', {'page': page, 'search': search, 'val': (city or job) if search != 'search' else ''})
+
+def to_main(request):
+    """
+    进入main页面
+    :param request:
+    :return:
+    """
+    return render(request, 'main.html', {})
+
