@@ -6,7 +6,9 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 # Create your views here.
-from user_app.models import User, TSj
+from user_app.models import User, TSj, MyLog
+from tools import mylog, spider
+
 
 def to_register(request):
     """
@@ -60,11 +62,12 @@ def login(request):
     try:
         user = User.objects.get(username=username)
         if check_password(password, user.password):
-            return HttpResponse('=================华丽分割西线=====================')
-            # return redirect('user:main')
+            request.session['user'] = user
+            # return HttpResponse('=================华丽分割西线=====================')
+            return redirect('user:to_main')
         raise ValueError
     except:
-        return redirect('user:to_main')
+        return redirect('user:to_login')
 
 
 def get_captcha(request):
@@ -85,19 +88,24 @@ def get_captcha(request):
     # print(request.META['captcha'])
     return HttpResponse(data, "image/png")
 
+@mylog
 def to_menu(request):
     """
     进入menu页面
     :param request:
     :return:
     """
+    if not spider():
+        return redirect('user:to_login')
     search = request.GET.get('search', 'search')
     city = request.GET.get('city', '')
     job = request.GET.get('job', '')
     page_index = request.GET.get('page_index', 1)
     li = TSj.objects.filter(city__contains=city, position__contains=job)
-    page = Paginator(li, 10).page(page_index)
+    # 判断用户是否已登录，若未登录，仅查询第一页数据
+    page = Paginator(li, 10).page(page_index if request.session.get('user') else 1)
     return render(request, 'menu.html', {'page': page, 'search': search, 'val': (city or job) if search != 'search' else ''})
+
 
 def to_main(request):
     """

@@ -30,3 +30,12 @@ class TSj(models.Model):
         db_table = 't_sj'
 
 
+class MyLog(models.Model):
+    user_ip = models.CharField(max_length=255)
+    request_url = models.CharField(max_length=255)
+    username = models.CharField(max_length=255)
+    create_time = models.IntegerField()
+    method = models.CharField(max_length=10)
+
+    class Meta:
+        db_table = 't_log'
