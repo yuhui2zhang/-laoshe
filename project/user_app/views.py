@@ -95,13 +95,16 @@ def to_menu(request):
     :param request:
     :return:
     """
-    if not spider():
+    ip = request.META.get('REMOTE_ADDR')
+    user = request.session.get('user')
+    username = user.username if user else ''
+    if not spider(ip, username):
         return redirect('user:to_login')
     search = request.GET.get('search', 'search')
     city = request.GET.get('city', '')
     job = request.GET.get('job', '')
     page_index = request.GET.get('page_index', 1)
-    li = TSj.objects.filter(city__contains=city, position__contains=job)
+    li = TSj.objects.filter(city__contains=city, position__contains=job).order_by('id')
     # 判断用户是否已登录，若未登录，仅查询第一页数据
     page = Paginator(li, 10).page(page_index if request.session.get('user') else 1)
     return render(request, 'menu.html', {'page': page, 'search': search, 'val': (city or job) if search != 'search' else ''})
@@ -114,4 +117,5 @@ def to_main(request):
     :return:
     """
     return render(request, 'main.html', {})
+
 
