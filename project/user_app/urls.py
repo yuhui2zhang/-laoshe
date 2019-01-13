@@ -12,5 +12,8 @@ urlpatterns = [
     path('get_captcha/', views.get_captcha, name='get_captcha'),
     path('to/menu/', views.to_menu, name='to_menu'),
     path('to/main/', views.to_main, name='to_main'),
+    path('verify_code_for_phone/', views.verify_code_for_phone, name='verify_code_for_phone'),
+    path('bar/', views.bar, name='bar'),
+    path('bar3d/', views.bar, name='bar3d'),
 ]
 
