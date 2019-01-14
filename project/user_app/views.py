@@ -6,7 +6,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from pyecharts import Bar3D, Bar
 
-from .. import demo_sms_send
+import demo_sms_send
 
 # Create your views here.
 from user_app.models import User, TSj, MyLog
@@ -56,17 +56,15 @@ def login(request):
     :param request:
     :return:
     """
-    print(123)
-    username = request.POST.get('username')
-    password = request.POST.get('password')
-    code = request.POST.get('code')
-    if code.lower() != request.session['captcha'].lower():
+    username = request.POST.get('username','')
+    password = request.POST.get('password','')
+    code = request.POST.get('code','')
+    if not code or code.lower() != request.session['captcha'].lower():
         return redirect('user:to_login')
     try:
         user = User.objects.get(username=username)
         if check_password(password, user.password):
             request.session['user'] = user
-            # return HttpResponse('=================华丽分割西线=====================')
             return redirect('user:to_main')
         raise ValueError
     except:
@@ -127,10 +125,10 @@ def verify_code_for_phone(request):
     :param request: phone
     :return:
     """
-    phone = request.POST.get('phone')
+    phone = request.GET.get('phone')
     verify_code = demo_sms_send.run(phone)
     # 设置验证码有效期为10分钟
-    request.set_cookie('verify_code',verify_code,max_age=60*10)
+    # request.set_cookie('verify_code',verify_code,max_age=60*10)
     return JsonResponse({})
 
 def bar(request):
@@ -172,7 +170,7 @@ def get_bar3d():
                    '#d73027', '#a50026']
     for i in range(len(citys)):
         for j in range(len(kws)):
-            data.append([i, j, len(Tsj.objects.filter(city=citys[i], position__icontains=kws[j]))])
+            data.append([i, j, len(TSj.objects.filter(city=citys[i], position__icontains=kws[j]))])
     print(data)
     bar3d.add(
         '招聘信息分布图',
