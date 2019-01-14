@@ -128,8 +128,9 @@ def verify_code_for_phone(request):
     phone = request.GET.get('phone')
     verify_code = demo_sms_send.run(phone)
     # 设置验证码有效期为10分钟
-    # request.set_cookie('verify_code',verify_code,max_age=60*10)
-    return JsonResponse({})
+    res = JsonResponse({})
+    res.set_cookie('verify_code',verify_code,max_age=60*10)
+    return res
 
 def bar(request):
     """
