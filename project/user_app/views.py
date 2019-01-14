@@ -4,6 +4,8 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.core.paginator import Page, Paginator
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
+from pyecharts import Bar3D, Bar
+
 from .. import demo_sms_send
 
 # Create your views here.
@@ -132,6 +134,11 @@ def verify_code_for_phone(request):
     return JsonResponse({})
 
 def bar(request):
+    """
+    获取每个城市的每个职位的柱状图
+    :param request:
+    :return:
+    """
     l = list()
     bar = Bar('计算机领域招聘信息柱状图','hello,i\'m 苍天有井',width=1200,height=600,background_color='pink',page_title='老舍就业分析网')
     citys = ['北京','上海','广州','深圳']
@@ -139,7 +146,7 @@ def bar(request):
     for city in citys:
         l2 = list()
         for kw in kws:
-            kw_list = Shuju.objects.filter(city=city,position__icontains=kw )
+            kw_list = TSj.objects.filter(city=city,position__icontains=kw )
             l2.append(len(kw_list))
         l.append(l2)
         l2 = list()
@@ -152,6 +159,10 @@ def bar(request):
 
 
 def get_bar3d():
+    """
+    获取3d柱状图
+    :return:
+    """
     data = list()
     bar3d = Bar3D('计算机领域招聘信息柱状图', 'hello,i\'m 苍天有井', width=1200, height=600, background_color='pink',
                   page_title='老舍就业分析网', renderer='gif')
@@ -161,7 +172,7 @@ def get_bar3d():
                    '#d73027', '#a50026']
     for i in range(len(citys)):
         for j in range(len(kws)):
-            data.append([i, j, len(Shuju.objects.filter(city=citys[i], position__icontains=kws[j]))])
+            data.append([i, j, len(Tsj.objects.filter(city=citys[i], position__icontains=kws[j]))])
     print(data)
     bar3d.add(
         '招聘信息分布图',
