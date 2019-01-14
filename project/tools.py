@@ -23,14 +23,17 @@ def mylog(func):
     return in_fun
 
 
-def spider(user_ip, username):
+def spider(user_ip, username, user_agent):
     """
     反爬虫
     :param user_ip:
     :param username:
     :return:
     """
+    # 反爬处理：暂时无法访问，仅返回登录页面，不符合阻塞条件时即可继续使用
+    # 查询当前10分钟内该IP的访问次数，若超过1000次，则进行反爬处理
     log_list = MyLog.objects.filter(user_ip=user_ip, create_time__gt=time.time()-10*60).count()
     count = MyLog.objects.filter(username=username, create_time__gt=time.time() - 10 * 60).count()
-    if log_list <= 10 or count <= 10:
+    # 判断UA中是否包含spider
+    if log_list <= 10 or count <= 10 or 'spider' in user_agent.lower():
         return True
