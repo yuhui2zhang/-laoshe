@@ -4,9 +4,8 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.core.paginator import Page, Paginator
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
-from pyecharts import Bar3D, Bar
-
 import demo_sms_send
+from pyecharts import Bar3D, Bar
 
 # Create your views here.
 from user_app.models import User, TSj, MyLog
@@ -99,7 +98,8 @@ def to_menu(request):
     ip = request.META.get('REMOTE_ADDR')
     user = request.session.get('user')
     username = user.username if user else ''
-    if not spider(ip, username):
+    user_agent = request.META.get('HTTP_USER_AGENT', '')
+    if not spider(ip, username, user_agent):
         return redirect('user:to_login')
     search = request.GET.get('search', 'search')
     city = request.GET.get('city', '')
